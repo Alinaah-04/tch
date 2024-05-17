@@ -63,6 +63,27 @@
         .center-text {
             text-align: center;
         }
+        .banner {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    padding: 10px;
+    text-align: center;
+    z-index: 9999; /* Ensure it appears above other content */
+    display: none; /* Initially hide the banners */
+}
+
+.success {
+    background-color: #4CAF50; /* Green */
+    color: white;
+}
+
+.error {
+    background-color: #f44336; /* Red */
+    color: white;
+}
+
     </style>
     <script>
       function redirectToPage() {
@@ -73,9 +94,72 @@
             window.location.href = 'signupo.html?type=orphanage';
         } 
     }
+    document.addEventListener("DOMContentLoaded", function() {
+        document.getElementById("signIn").addEventListener("submit", function(event) {
+          event.preventDefault(); // Prevent form submission
+          
+          // Get form data
+          var email = document.getElementById("email").value;
+          var password = document.getElementById("password").value;
+          // Example: Check if fields are not empty
+          if (email.trim() === '' || password.trim() === '' ) {
+            alert("Please fill in all fields");
+            return;
+          }
+          
+          // Send data to server using fetch
+          fetch('http://localhost:3000/login', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+              email: email,
+              password: password,
+              
+            })
+          })
+          .then(response => {
+            // if (!response.ok) {
+            //   throw new Error('Network response was not ok');
+            // }
+            showErrorBanner(response.message)
+            return response.json();
+          })
+          .then(data => {
+            // Process the retrieved data
+            // You can redirect the user to another page after successful signup
+            localStorage.setItem('user',JSON.stringify(data))
+            showSuccessBanner('successful');
+            window.location.href = "shopdonate.html";
+          })
+          .catch(error => {
+            showErrorBanner(error)
+            console.error('There was a problem with the fetch operation:', error);
+          });
+        });
+      });
+      // Function to show success banner
+function showSuccessBanner(message) {
+    const successBanner = document.getElementById('successBanner');
+    successBanner.textContent = message;
+    successBanner.style.display = 'block';
+}
+
+// Function to show error banner
+function showErrorBanner(message) {
+    const errorBanner = document.getElementById('errorBanner');
+    errorBanner.textContent = message;
+    errorBanner.style.display = 'block';
+}
+
+
     </script>
 </head>
 <body>
+  <div id="successBanner" class="banner success">Success message goes here!</div>
+<div id="errorBanner" class="banner error">Error message goes here!</div>
+
     <nav class="navbar bg-body-tertiary">
         <div class="container-fluid">
           <a class="navbar-brand" href="home.html">
@@ -86,10 +170,10 @@
     </nav>
     <div class="container justify-content-center align-items-center">
         <h2>Login to your account</h2>
-        <form action="login.php" method="post">
+        <form action="login.php" id="signIn" method="post">
             <div class="form-group fw-bold">
                 <label for="username">Username</label>
-                <input type="text" id="username" name="username" required>
+                <input type="text" id="email" name="username" required>
             </div>
             <div class="form-group fw-bold">
                 <label for="password">Password</label>

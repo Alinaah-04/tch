@@ -49,23 +49,23 @@
         </div>
     </nav>
     <div class="form-container">
-        <form >
+        <form id="signupForm">
             <div class="row mb-4">
-              <label for="inputName" class="col-sm-2 col-form-label ">USER NAME</label>
+              <label for="username" class="col-sm-2 col-form-label ">USER NAME</label>
               <div class="col-sm-10">
-                <input type="text" class="form-control" id="inputName">
+                <input type="text" class="form-control" id="username">
               </div>
              </div>
              <div class="row mb-4">
-                <label for="inputPassword4" class="col-sm-2 col-form-label">PASSWORD</label>
+                <label for="password" class="col-sm-2 col-form-label">PASSWORD</label>
                 <div class="col-sm-10">
-                    <input type="password" class="form-control" id="inputPassword4">
+                    <input type="password" class="form-control" id="password">
                 </div>
                </div>
                <div class="row mb-4">
-                <label for="inputEmail4" class="col-sm-2 col-form-label">EMAIL ID</label>
+                <label for="email" class="col-sm-2 col-form-label">EMAIL ID</label>
                 <div class="col-sm-10">
-                    <input type="email" class="form-control" id="inputEmail4">
+                    <input type="email" class="form-control" id="email">
                 </div>
                </div>
                <div class="row mb-5">
@@ -75,9 +75,58 @@
                 </div>
                </div>
             <div class="col-12 ">
-                <button type="submit" class="btn btn-primary d-block mx-auto">SIGN UP</button>
+                <button type="submit" class="btn btn-primary d-block mx-auto" >SIGN UP</button>
             </div>
         </form>
     </div>
+    <script>
+      document.addEventListener("DOMContentLoaded", function() {
+        document.getElementById("signupForm").addEventListener("submit", function(event) {
+          event.preventDefault(); // Prevent form submission
+          
+          // Get form data
+          var username = document.getElementById("username").value;
+          var email = document.getElementById("email").value;
+          var password = document.getElementById("password").value;
+          var phoneNo = document.getElementById('phoneNo').value;
+          console.log(username)
+          // Example: Check if fields are not empty
+          if (username.trim() === '' || email.trim() === '' || password.trim() === '' || phoneNo.trim() === '') {
+            alert("Please fill in all fields");
+            return;
+          }
+          
+          // Send data to server using fetch
+          fetch('http://localhost:3000/signup', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+              name: username,
+              email: email,
+              password: password,
+              phno: phoneNo
+            })
+          })
+          .then(response => {
+            if (!response.ok) {
+              throw new Error('Network response was not ok');
+            }
+            return response.json();
+          })
+          .then(data => {
+            // Process the retrieved data
+            // You can redirect the user to another page after successful signup
+            localStorage.setItem('user',data)
+            window.location.href = "shopdonate.html";
+          })
+          .catch(error => {
+            console.error('There was a problem with the fetch operation:', error);
+          });
+        });
+      });
+    </script>
+    
 </body>
 </html>
